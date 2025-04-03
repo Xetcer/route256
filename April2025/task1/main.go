@@ -20,17 +20,12 @@ func main() {
 func Run(in *bufio.Reader, out *bufio.Writer) {
 	var n int
 	fmt.Fscanln(in, &n)
-
 	for i := 0; i < n; i++ {
-		var qty int
-		fmt.Fscanln(in, &qty)
-		for j := 0; j < qty; j++ {
-			var str string
-			fmt.Fscanln(in, &str)
-			result := IsPattern(str)
-			fmt.Println("str:", str, "result", result)
-			fmt.Fprintf(out, "%s\n", result)
-		}
+		var str string
+		fmt.Fscanln(in, &str)
+		result := IsPattern(str)
+		fmt.Println("n:", n, "str:", str, "result", result)
+		fmt.Fprintf(out, "%s\n", result)
 	}
 }
 
