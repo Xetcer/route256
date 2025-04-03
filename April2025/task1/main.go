@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"unicode"
+	"regexp"
 )
 
 func main() {
@@ -34,13 +34,30 @@ func IsPattern(s string) string {
 		return "YES"
 	}
 	charsMap := make(map[rune]int)
+	// составляем карту символов
 	for _, char := range s {
-		char = unicode.ToLower(char)
 		charsMap[char]++
-		if (len(charsMap) >= 2) ||
-			(charsMap[char] >= 3) {
-			return "YES"
+	}
+
+	// Находим главную букву в строке (должна повторяться больше всех раз)
+	var patternStr string
+	max := 0
+	for k, value := range charsMap {
+		if max < value {
+			patternStr = string(k)
+			max = value
 		}
 	}
-	return "NO"
+
+	// Формируем шаблон Regexp
+	byteS := []byte(s)
+	regexpStr := fmt.Sprintf("^(%s+)(([^%s]{1}[%s]{1})|[%s+])*$", patternStr, patternStr, patternStr, patternStr)
+
+	fmt.Println(regexpStr)
+	re := regexp.MustCompile(regexpStr)
+	if re.Match(byteS) {
+		return "YES"
+	} else {
+		return "NO"
+	}
 }
