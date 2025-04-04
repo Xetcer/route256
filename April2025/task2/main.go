@@ -76,9 +76,13 @@ func MaxDollars(banks []*Bank) float64 {
 
 	// Теперь максимальное через евро
 	AB := banks[0].Operation[RuToEUR] * banks[1].Operation[EURToUSD]
-	BC := banks[1].Operation[RuToEUR] * banks[2].Operation[EURToUSD]
 	AC := banks[0].Operation[RuToEUR] * banks[2].Operation[EURToUSD]
-	tempMax := max(AB, BC, AC)
+	BA := banks[1].Operation[RuToEUR] * banks[0].Operation[EURToUSD]
+	BC := banks[1].Operation[RuToEUR] * banks[2].Operation[EURToUSD]
+	CA := banks[2].Operation[RuToEUR] * banks[0].Operation[EURToUSD]
+	CB := banks[2].Operation[RuToEUR] * banks[1].Operation[EURToUSD]
+
+	tempMax := max(AB, BC, AC, BA, CA, CB)
 	if maxDollars < tempMax {
 		maxDollars = tempMax
 	}
