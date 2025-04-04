@@ -38,28 +38,13 @@ func Run(in *bufio.Reader, out *bufio.Writer) {
 	// перебор по наборам входных данных
 	for range n {
 		banks := make([]*Bank, 0)
-		// fmt.Println("test # ", ctest)
 		// заполняем банки данными теста
 		for range banksCount {
 			banks = append(banks, FillBank(in))
 		}
-		// fmt.Println(banks)
 		result := MaxDollars(banks)
-
 		// Универсальный вывод
-		// if result == float64(int(result)) {
-		// 	// Если число целое
-		// 	fmt.Fprintf(out, "%.0e\n", result)
-		// } else {
-		// 	// Если число дробное
-		// 	// Если число дробное, выводим без округления и незначащих нулей
-		// 	strValue := fmt.Sprintf("%.15f", result)    // Используем большую точность
-		// 	strValue = strings.TrimRight(strValue, "0") // Убираем нули справа
-		// 	strValue = strings.TrimRight(strValue, ".") // Убираем точку, если осталась
-		// 	// fmt.Println(strValue)
-		// 	fmt.Fprintf(out, "%s\n", strValue)
-		// }
-		fmt.Fprintf(out, "%f\n", result)
+		fmt.Fprintf(out, "%g\n", result)
 	}
 
 }
@@ -133,43 +118,5 @@ func MaxDollars(banks []*Bank) float64 {
 	if maxDollars < tempMax {
 		maxDollars = tempMax
 	}
-
-	//Перебор всех возможных комбинаций банков
-	// for _, bankA := range banks {
-	// 	for _, bankB := range banks {
-	// 		if bankA == bankB {
-	// 			continue
-	// 		}
-	// 		for _, bankC := range banks {
-	// 			if bankC == bankA || bankC == bankB {
-	// 				continue
-	// 			}
-
-	// 			// Прямой обмен рублей на доллары
-	// 			dollars := bankA.Operation[RuToUSD]
-	// 			if dollars > maxDollars {
-	// 				maxDollars = dollars
-	// 			}
-
-	// 			// Обмен через евро
-	// 			dollars = bankA.Operation[RuToEUR] * bankB.Operation[EURToUSD]
-	// 			if dollars > maxDollars {
-	// 				maxDollars = dollars
-	// 			}
-
-	// 			// Обратный обмен через доллар обратно в рубль и потом в доллар
-	// 			dollars = bankA.Operation[RuToUSD] / bankB.Operation[USDToRu] * bankC.Operation[RuToUSD]
-	// 			if dollars > maxDollars {
-	// 				maxDollars = dollars
-	// 			}
-
-	// 			// Обмен через евро и рубль
-	// 			dollars = bankA.Operation[RuToEUR] * bankB.Operation[EURToRu] * bankC.Operation[RuToUSD]
-	// 			if dollars > maxDollars {
-	// 				maxDollars = dollars
-	// 			}
-	// 		}
-	// 	}
-	// }
 	return maxDollars
 }
