@@ -68,25 +68,52 @@ func IsSimilar(s1, s2 string) int {
 		return 1
 	}
 	// выделим из нее четные и нечетные подстроки
-	even1, odd1 := GetSubStr(s1)
-	even2, odd2 := GetSubStr(s2)
+	even, odd := GetSubStr(s1, s2, lenS1, lenS2)
 
-	if even1 == even2 || odd1 == odd2 {
+	if even != "" || odd != "" {
 		return 1
 	} else {
 		return 0
 	}
 }
 
-func GetSubStr(s string) (even string, odd string) {
+func GetSubStr(s1, s2 string, Len1, Len2 int) (even string, odd string) {
 	even = ""
 	odd = ""
-	for i, char := range s {
-		if i%2 == 0 {
-			even += string(char)
+	firsIndex := 0
+	step := 1
+	checkEven, checkOdd := true, true // если длины равны то ищем обе комбинации
+	if Len1 != Len2 {
+		if max(Len1, Len2)%2 == 0 {
+			checkOdd = false
 		} else {
-			odd += string(char)
+			checkEven = false
+			firsIndex = 1
+		}
+		step = 2
+	}
+
+	for i := firsIndex; i < min(Len1, Len2); i += step {
+		if i%2 == 0 {
+			if checkEven {
+				if s1[i] == s2[i] {
+					even += string(s1[i])
+				} else {
+					even = ""
+					checkEven = false
+				}
+			}
+		} else {
+			if checkOdd {
+				if s1[i] == s2[i] {
+					odd += string(s1[i])
+				} else {
+					odd = ""
+					checkOdd = false
+				}
+			}
 		}
 	}
+
 	return even, odd
 }
