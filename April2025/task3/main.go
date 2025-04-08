@@ -3,9 +3,18 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"math"
 	"os"
 )
+
+type SubString struct {
+	evenStr string // четная подстрока
+	oddStr  string // нечетная подстрока
+}
+
+type Str struct {
+	SubStr SubString // подстроки данной строки
+	count  int       // количество таких строк
+}
 
 func main() {
 	in := bufio.NewReader(os.Stdin)
@@ -19,101 +28,71 @@ func Run(in *bufio.Reader, out *bufio.Writer) {
 	var t int // количество наборов строк
 	var n int // количество строк в текущем наборе
 	fmt.Fscanln(in, &t)
-	result := 0 // число пар похожих строк
 	// перебор по наборам входных данных
 	for range t {
 		fmt.Fscanln(in, &n)
 		var str string // каждая новая строка
-		strings := make([]string, 0)
+		strMap := make(map[string]Str, 0)
+		evenMap := make(map[string]int, 0)
+		oddMap := make(map[string]int, 0)
 		for range n {
 			fmt.Fscanln(in, &str)
-			strings = append(strings, str)
+			if value, ok := strMap[str]; ok {
+				subStr := value
+				subStr.count++
+				strMap[str] = subStr
+				evenMap[subStr.SubStr.evenStr]++
+				oddMap[subStr.SubStr.oddStr]++
+			} else {
+				even, odd := getKeys(str)
+				strMap[str] = Str{SubStr: SubString{evenStr: even, oddStr: odd}, count: 1}
+				if even != "" {
+					evenMap[even]++
+				}
+				if odd != "" {
+					oddMap[odd]++
+				}
+			}
 		}
-		if len(strings) > 1 {
-			result = GetSimilarStrCount(strings)
-		} else {
-			result = 0
+		pairs := 0
+		for _, keyStrs := range strMap {
+			isCompare := false
+			if value, ok := evenMap[keyStrs.SubStr.evenStr]; ok {
+				if value > 1 {
+					pairs += keyStrs.count
+					isCompare = true
+				}
+			}
+			if !isCompare {
+				if value, ok := oddMap[keyStrs.SubStr.oddStr]; ok {
+					if value > 1 {
+						pairs += keyStrs.count
+					}
+				}
+			}
 		}
+		// fmt.Println("stringsMap:", strMap, "evenMap:", evenMap, "oddMap", oddMap, "Pairs", getPairsCount(pairs))
 
-		fmt.Fprintf(out, "%d\n", result)
-		clear(strings)
-		result = 0
+		fmt.Fprintf(out, "%d\n", getPairsCount(pairs))
+		clear(strMap)
 	}
 }
 
-func GetSimilarStrCount(strs []string) int {
-	SimilarPairs := 0
-	// fmt.Println("New strings:", strs)
-	for i := range len(strs) - 1 {
-		for j := i + 1; j < len(strs); j++ {
-			SimilarPairs += IsSimilar(strs[i], strs[j])
-		}
+func getPairsCount(count int) int {
+	if count > 1 {
+		return count * (count - 1) / 2 // количество пар
 	}
-	return SimilarPairs
+	return 0
 }
 
-func IsSimilar(s1, s2 string) int {
-	lenS1 := len(s1)
-	lenS2 := len(s2)
-	if math.Abs(float64(lenS1)-float64(lenS2)) > 1 {
-		return 0
-	}
-	if lenS1 == 1 && lenS2 == 1 {
-		if s1[0] == s2[0] {
-			return 1
-		} else {
-			return 0
-		}
-	} else if s1 == s2 {
-		return 1
-	}
-	// выделим из нее четные и нечетные подстроки
-	even, odd := GetSubStr(s1, s2, lenS1, lenS2)
-
-	if even != "" || odd != "" {
-		return 1
-	} else {
-		return 0
-	}
-}
-
-func GetSubStr(s1, s2 string, Len1, Len2 int) (even string, odd string) {
-	even = ""
-	odd = ""
-	firsIndex := 0
-	step := 1
-	checkEven, checkOdd := true, true // если длины равны то ищем обе комбинации
-	if Len1 != Len2 {
-		if max(Len1, Len2)%2 == 0 {
-			checkOdd = false
-		} else {
-			checkEven = false
-			firsIndex = 1
-		}
-		step = 2
-	}
-
-	for i := firsIndex; i < min(Len1, Len2); i += step {
+func getKeys(s string) (even, odd string) {
+	even, odd = "", ""
+	for i := range s {
 		if i%2 == 0 {
-			if checkEven {
-				if s1[i] == s2[i] {
-					even += string(s1[i])
-				} else {
-					even = ""
-					checkEven = false
-				}
-			}
+			even += string(s[i])
 		} else {
-			if checkOdd {
-				if s1[i] == s2[i] {
-					odd += string(s1[i])
-				} else {
-					odd = ""
-					checkOdd = false
-				}
-			}
+			odd += string(s[i])
 		}
 	}
-
 	return even, odd
 }
