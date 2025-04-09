@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -52,14 +53,17 @@ func getPairsCount(counts map[string]int) int {
 	return sum
 }
 
+// Функция для получения четных и нечетных подстрок
 func getKeys(s string) (even, odd string) {
-	even, odd = "", ""
+	var evenBuilder, oddBuilder strings.Builder
+
 	for i := range s {
 		if i%2 == 0 {
-			even += string(s[i])
+			evenBuilder.WriteByte(s[i])
 		} else {
-			odd += string(s[i])
+			oddBuilder.WriteByte(s[i])
 		}
 	}
-	return even, odd
+
+	return evenBuilder.String(), oddBuilder.String()
 }
