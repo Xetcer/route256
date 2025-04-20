@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -15,19 +16,54 @@ func main() {
 }
 
 func Run(in *bufio.Reader, out *bufio.Writer) {
-	var n int
-	fmt.Fscanln(in, &n)
-	result := "TODO"
+	var t int // количество наборов строк
+	var n int // количество строк в текущем наборе
+	fmt.Fscanln(in, &t)
 	// перебор по наборам входных данных
-	for range n {
-		// banks := make([]*Bank, 0)
-		// // заполняем банки данными теста
-		// for range banksCount {
-		// 	banks = append(banks, FillBank(in))
-		// }
-		// result := MaxDollars(banks)
-		// // Универсальный вывод
-		fmt.Fprintf(out, "%s\n", result)
+	for range t {
+		fmt.Fscanln(in, &n)
+		var newStr string // каждая новая строка
+		strMap := make(map[string]int)
+		evenMap := make(map[string]int)
+		oddMap := make(map[string]int)
+		for range n {
+			fmt.Fscanln(in, &newStr)
+			even, odd := getKeys(newStr)
+			evenMap[even]++
+			if odd != "" {
+				oddMap[odd]++
+				strMap[newStr]++
+			}
+		}
+
+		oddSum := getPairsCount(oddMap)
+		evenSum := getPairsCount(evenMap)
+		intersecSum := getPairsCount(strMap)
+		pairs := oddSum + evenSum - intersecSum
+		fmt.Fprintf(out, "%d\n", pairs)
+		clear(strMap)
+	}
+}
+
+func getPairsCount(counts map[string]int) int {
+	sum := 0
+	for _, count := range counts {
+		sum += count * (count - 1) / 2 // количество пар
+	}
+	return sum
+}
+
+// Функция для получения четных и нечетных подстрок
+func getKeys(s string) (even, odd string) {
+	var evenBuilder, oddBuilder strings.Builder
+
+	for i := range s {
+		if i%2 == 0 {
+			evenBuilder.WriteByte(s[i])
+		} else {
+			oddBuilder.WriteByte(s[i])
+		}
 	}
 
+	return evenBuilder.String(), oddBuilder.String()
 }
